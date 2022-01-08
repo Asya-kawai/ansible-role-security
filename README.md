@@ -83,6 +83,11 @@ clamav:
   mail_to: root
 ```
 
+**Note**
+
+From the second time onwards, `freshclam` service is running.
+Therefore freshclam command will fail and you must set the `freshclam` variable as `no`.
+
 ## Group Vars / CentOS(webserver_centos.yml)
 
 `webserver_ubuntu.yml` is `webservers` host's children.

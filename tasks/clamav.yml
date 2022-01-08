@@ -151,6 +151,14 @@
     - clamav
     - webserver
 
+- name: Allow antivirus to scan the system for CentOS
+  command: setsebool -P antivirus_can_scan_system on
+  when: ansible_facts['os_family'] == 'RedHat'
+  tags:
+    - security
+    - clamav
+    - webserver
+
 - name: Create /opt directory
   file:
     path: "/opt"
