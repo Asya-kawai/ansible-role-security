@@ -1,0 +1,16 @@
+rkhunter:
+  propupd: no
+  mail_to: root
+
+clamav:
+  user: "{% if ansible_facts['os_family'] == 'RedHat' %}clamscan{% else %}clamav{% endif %}"
+  group: "{% if ansible_facts['os_family'] == 'RedHat' %}clamscan{% else %}clamav{% endif %}"
+  exclude_paths:
+    - ^/boot/
+    - ^/dev/
+    - ^/proc/
+    - ^/snap/
+    - ^/sys/
+    - ^/var/log/clamav/virus
+  freshclam: yes
+  mail_to: root
