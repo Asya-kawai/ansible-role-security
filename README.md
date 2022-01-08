@@ -77,7 +77,7 @@ clamav:
     - ^/dev/
     - ^/proc/
     - ^/sys/
-    - ~/run/
+    - ^/run/
     - ^/var/log/clamav/virus/
   freshclam: no
   mail_to: root
@@ -102,7 +102,7 @@ clamav:
     - ^/proc/
     - ^/sys/
     - ^/var/log/clamav/virus/
-    - ~/var/spool/
+    - ^/var/spool/
   freshclam: no
   mail_to: root
 ```
