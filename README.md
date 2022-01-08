@@ -1,4 +1,4 @@
-# Ansible Role For SSH
+# Ansible Role For Security
 
 Set Basic security configuration using `rkhunter` and `clamav`.
 
