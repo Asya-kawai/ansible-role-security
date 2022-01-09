@@ -19,9 +19,9 @@
     - rkhunter
     - webserver
 
-- name: Copy rkhunter config
-  copy:
-    src: "../files/{{ ansible_facts['os_family'] }}/etc/{{ item }}"
+- name: Configure rkhunter
+  template:
+    src: "{{ ansible_facts['os_family'] }}/etc/{{ item }}.j2"
     dest: "/etc/{{ item }}"
     owner: root
     group: root

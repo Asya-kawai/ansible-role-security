@@ -187,8 +187,8 @@
   file:
     path: "/var/log/clamav"
     state: directory
-    owner: "{{ clamav.user }}"
-    group: "{{ clamav.group }}"
+    owner: "{{ clamav.user | trim }}"
+    group: "{{ clamav.group | trim }}"
     mode: 0755
   tags:
     - security
@@ -199,8 +199,8 @@
   file:
     path: "/var/log/clamav/virus"
     state: directory
-    owner: "{{ clamav.user }}"
-    group: "{{ clamav.group }}"
+    owner: "{{ clamav.user | trim }}"
+    group: "{{ clamav.group | trim }}"
     mode: 0755
   tags:
     - security
@@ -213,6 +213,21 @@
     dest: "/opt/bin/{{ item }}"
   with_items:
     - clamd-fullscan.sh
+  tags:
+    - security
+    - clamav
+    - webserver
+
+- name: Create clamd full scan services
+  template:
+    src: "{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ item }}"
+    owner: root
+    group: root
+    mode: 0644
+  with_items:
+    - clamd-fullscan.service
+    - clamd-fullscan.timer
   tags:
     - security
     - clamav

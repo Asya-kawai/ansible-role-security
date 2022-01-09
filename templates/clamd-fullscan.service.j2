@@ -1,0 +1,12 @@
+[Unit]
+Description=The clamd full scan
+Wants=clamd-fullscan.timer
+
+[Service]
+Type=oneshot
+User=root
+Group=root
+ExecStart=/opt/bin/clamd-fullscan.sh
+
+[Install]
+WantedBy=multi-user.target

@@ -3,8 +3,18 @@ rkhunter:
   mail_to: root
 
 clamav:
-  user: "{% if ansible_facts['os_family'] == 'RedHat' %}clamscan{% else %}clamav{% endif %}"
-  group: "{% if ansible_facts['os_family'] == 'RedHat' %}clamscan{% else %}clamav{% endif %}"
+  user: >-
+    {% if ansible_facts['os_family'] == 'RedHat' %}
+    clamscan
+    {% else %}
+    clamav
+    {% endif %}
+  group: >-
+    {% if ansible_facts['os_family'] == 'RedHat' %}
+    clamscan
+    {% else %}
+    clamav
+    {% endif %}
   exclude_paths:
     - ^/boot/
     - ^/dev/
@@ -14,3 +24,5 @@ clamav:
     - ^/var/log/clamav/virus
   freshclam: yes
   mail_to: root
+
+clamav_clamd_fullscan_on_calender: '*-*-* 00:00:00'
