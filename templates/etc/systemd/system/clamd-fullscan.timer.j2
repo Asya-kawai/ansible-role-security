@@ -1,9 +1,9 @@
 [Unit]
 Description=The timer of clamd full scan
-Requires=clamd-fullscan.service
+Requires={{ clamav_clamd_fullscan_service_name }}
 
 [Timer]
-Unit=clamd-fullscan.service
+Unit={{ clamav_clamd_fullscan_service_name }}
 OnCalendar={{ clamav_clamd_fullscan_on_calender }}
 
 [Install]

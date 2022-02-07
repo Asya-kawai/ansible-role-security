@@ -1,3 +1,4 @@
+---
 - name: Install OS packages for Debian
   package:
     name:
@@ -5,9 +6,7 @@
     state: latest
   when: ansible_facts['os_family'] == 'Debian'
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-install-os-packages
 
 - name: Install OS packages for CentOS
   package:
@@ -15,24 +14,27 @@
       - rkhunter
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-install-os-packages
+
+- name: Check lwp-request command exists
+  stat:
+    path: /usr/bin/lwp-reqeust
+  register: lwp_reqeust_path_result
+  when: ansible_facts['os_family'] == 'Debian'
+  tags:
+    - rkhunter-check-lwp-reqeust
 
 - name: Configure rkhunter
   template:
-    src: "{{ ansible_facts['os_family'] }}/etc/{{ item }}.j2"
-    dest: "/etc/{{ item }}"
+    src: "{{ ansible_facts['os_family'] }}/{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
     owner: root
     group: root
     mode: 0644
   when: ansible_facts['os_family'] == 'Debian' or ansible_facts['os_family'] == 'RedHat'
-  with_items:
-     - rkhunter.conf
+  with_items: "{{ rkhunter_conf_path }}"
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-configure
 
 # Reference: https://github.com/maxlareo/ansible-rkhunter
 # When first time to run, it is always failed.
@@ -43,62 +45,50 @@
   failed_when: (not rkhunter_update_result.rc == 2) and (not rkhunter_update_result.rc == 0)
   changed_when: false
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-update
 
 # Caution: it should run after ensure that all warning repoted by rkhunter are safe.
 - name: Propupd rkhunter
   command: rkhunter --propupd
   when: rkhunter.propupd | default(false)
+  changed_when: false
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-propupd
 
 - name: Check warnings after updated rkhunter config
   command: rkhunter --check --skip-keypress --report-warnings-only
   register: rkhunter_check_result
+  changed_when: false
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-check-warnings
 
 - name: Check rkhunter stdout
   fail:
     msg: rkhunter reported some warning...
   when: not rkhunter_check_result.stdout == ""
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-check-stdout
 
-- name: Config rkhunter daily job for Debian
+- name: Configure rkhunter daily job for Debian
   template:
     src: "{{ ansible_facts['os_family'] }}/etc/default/{{ item }}.j2"
     dest: "/etc/default/{{ item }}"
     owner: root
     group: root
     mode: 0644
-  with_items:
-     - rkhunter
+  with_items: rkhunter
   when: ansible_facts['os_family'] == 'Debian'
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-configure-daily-job
 
-- name: Config rkhunter daily job for CentOS
+- name: Configure rkhunter daily job for CentOS
   template:
     src: "{{ ansible_facts['os_family'] }}/etc/sysconfig/{{ item }}.j2"
     dest: "/etc/sysconfig/{{ item }}"
     owner: root
     group: root
     mode: 0644
-  with_items:
-     - rkhunter
+  with_items: rkhunter
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
-    - security
-    - rkhunter
-    - webserver
+    - rkhunter-configure-daily-job

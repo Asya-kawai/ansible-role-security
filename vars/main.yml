@@ -1,0 +1,17 @@
+---
+rkhunter_conf_name: rkhunter.conf
+rkhunter_conf_path: "/etc/{{ rkhunter_conf_name }}"
+
+clamav_freshclam_conf_name: freshclam.conf
+clamav_freshclam_conf_path: "/etc/clamav/{{ clamav_freshclam_conf_name }}"
+
+clamav_clamd_fullscan_name: clamd-fullscan.sh
+clamav_clamd_fullscan_path: "{{ clamav_script_dir.rstrip('/') }}/{{ clamav_clamd_fullscan_name }}"
+
+clamav_clamd_fullscan_service_dir: /etc/systemd/system
+clamav_clamd_fullscan_service_name: clamd-fullscan.service
+clamav_clamd_fullscan_service_path: "{{ clamav_clamd_fullscan_service_dir.rstrip('/') }}/{{ clamav_clamd_fullscan_service_name }}"
+
+clamav_clamd_fullscan_timer_dir: /etc/systemd/system
+clamav_clamd_fullscan_timer_name: clamd-fullscan.timer
+clamav_clamd_fullscan_timer_path: "{{ clamav_clamd_fullscan_timer_dir.rstrip('/') }}/{{ clamav_clamd_fullscan_timer_name }}"

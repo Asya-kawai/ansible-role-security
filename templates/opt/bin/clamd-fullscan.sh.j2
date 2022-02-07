@@ -1,0 +1,15 @@
+#!/bin/sh
+
+DATE=$(date)
+HOSTNAME=$(hostname)
+LOGPATH={{ clamav_log_dir.rstrip('/') }}/clamd-fullscan.log
+clamdscan \
+  --fdpass \
+  --move={{ clamav_virus_evacuation_dir.rstrip('/') }} \
+  --log=$LOGPATH \
+  /
+
+if [ ! -z "$(grep FOUND$ ${LOGPATH})" ]; then
+  echo "virus was found."
+  cat $LOGPATH | mail -s "[Virus Found] ${HOSTNAME} ${DATE}" {{ clamav_mail_to }}
+fi

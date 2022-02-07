@@ -1,12 +1,13 @@
+---
 - name: Update OS package caches for Debian
   apt:
     update_cache: yes
   when: ansible_facts['os_family'] == 'Debian'
   tags:
     - security
+    - security-update-os-package-caches
     - rkhunter
     - clamav
-    - webserver
 
 - name: Update OS package caches for CentOS
   dnf:
@@ -14,9 +15,9 @@
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
     - security
+    - security-update-os-package-caches
     - rkhunter
     - clamav
-    - webserver
 
 - name: Update OS packages
   package:
@@ -24,14 +25,20 @@
     state: latest
   tags:
     - security
+    - security-update-os-packages
     - rkhunter
     - clamav
-    - webserver
 
 # Setup rkhunter
 - name: Setup rkhunter
   import_tasks: rkhunter.yml
+  tags:
+    - security
+    - rkhunter
 
 # Setup clamav for Debian
 - name: Setup clamav
   import_tasks: clamav.yml
+  tags:
+    - security
+    - clamav

@@ -596,7 +596,9 @@ SCRIPTWHITELIST=/usr/bin/egrep
 SCRIPTWHITELIST=/usr/bin/fgrep
 SCRIPTWHITELIST=/usr/bin/which
 SCRIPTWHITELIST=/usr/bin/ldd
+{% if (lwp_request_path_result is defined) and (not lwp_request_path_result == '') %}
 SCRIPTWHITELIST=/usr/bin/lwp-request
+{% endif %}
 SCRIPTWHITELIST=/usr/sbin/adduser
 #SCRIPTWHITELIST=/usr/sbin/prelink
 #SCRIPTWHITELIST=/usr/sbin/unhide.rb

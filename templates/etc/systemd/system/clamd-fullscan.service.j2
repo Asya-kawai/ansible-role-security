@@ -1,12 +1,12 @@
 [Unit]
 Description=The clamd full scan
-Wants=clamd-fullscan.timer
+Wants={{ clamav_clamd_fullscan_timer_name }}
 
 [Service]
 Type=oneshot
 User=root
 Group=root
-ExecStart=/opt/bin/clamd-fullscan.sh
+ExecStart={{ clamav_clamd_fullscan_path }}
 
 [Install]
 WantedBy=multi-user.target

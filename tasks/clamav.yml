@@ -9,9 +9,7 @@
     state: latest
   when: ansible_facts['os_family'] == 'Debian'
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-install-os-packages
 
 - name: Install OS packages for CentOS
   package:
@@ -25,11 +23,9 @@
       - mailx
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-install-os-packages
 
-- name: Config freshclam for Debian
+- name: Configure freshclam for Debian
   template:
     src: "{{ ansible_facts['os_family'] }}/etc/clamav/{{ item }}.j2"
     dest: "/etc/clamav/{{ item }}"
@@ -40,11 +36,9 @@
      - freshclam.conf
   when: ansible_facts['os_family'] == 'Debian'
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-configure-freshclam
 
-- name: Config freshclam for CentOS
+- name: Configure freshclam for CentOS
   template:
     src: "{{ ansible_facts['os_family'] }}/etc/{{ item }}.j2"
     dest: "/etc/{{ item }}"
@@ -55,19 +49,16 @@
      - freshclam.conf
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-configure-freshclam
 
 - name: Update clamav pattern file by freshclam
   command: freshclam
   register: freshclam_result
   when:
-    - clamav.freshclam | default(true)
+    - clamav_freshclam | default(true)
+  changed_when: false
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-freshclam
 
 - name: Start and enable clamav service for Debian
   systemd:
@@ -76,11 +67,11 @@
     enabled: yes
   when:
     - ansible_facts['os_family'] == 'Debian'
+    - freshclam_result is defined
     - freshclam_result is succeeded
+    - not ansible_check_mode
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-start-service
 
 - name: Start and enable clamav service for CentOS
   systemd:
@@ -89,11 +80,11 @@
     enabled: yes
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - freshclam_result is defined
     - freshclam_result is succeeded
+    - not ansible_check_mode
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-start-service
 
 - name: Start and enable freshclam service for Debian
   systemd:
@@ -102,11 +93,11 @@
     enabled: yes
   when:
     - ansible_facts['os_family'] == 'Debian'
+    - freshclam_result is defined
     - freshclam_result is succeeded
+    - not ansible_check_mode
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-start-freshclam
 
 - name: Start and enable freshclam service for CentOS
   systemd:
@@ -115,13 +106,13 @@
     enabled: yes
   when:
     - ansible_facts['os_family'] == 'RedHat'
+    - freshclam_result is defined
     - freshclam_result is succeeded
+    - not ansible_check_mode
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-start-freshclam
 
-- name: Config clamdscan for Debian
+- name: Configure clamdscan for Debian
   template:
     src: "{{ ansible_facts['os_family'] }}/etc/clamav/{{ item }}.j2"
     dest: "/etc/clamav/{{ item }}"
@@ -129,14 +120,12 @@
     group: root
     mode: 0644
   with_items:
-     - clamd.conf
+    - clamd.conf
   when: ansible_facts['os_family'] == 'Debian'
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-configure-clamdscan
 
-- name: Config clamdscan for CentOS
+- name: Configure clamdscan for CentOS
   template:
     src: "{{ ansible_facts['os_family'] }}/etc/clamd.d/{{ item }}.j2"
     dest: "/etc/clamd.d/{{ item }}"
@@ -144,91 +133,82 @@
     group: root
     mode: 0644
   with_items:
-     - scan.conf
+    - scan.conf
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-configure-clamdscan
 
 - name: Allow antivirus to scan the system for CentOS
   command: setsebool -P antivirus_can_scan_system on
   when: ansible_facts['os_family'] == 'RedHat'
+  changed_when: false
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-selinux-allow-system-scan
 
-- name: Create /opt directory
+- name: Create script directory
   file:
-    path: "/opt"
+    path: "{{ clamav_script_dir }}"
     state: directory
     owner: root
     group: root
     mode: 0755
   tags:
-    - security
-    - clamav
-    - webserver
-
-- name: Create /opt/bin directory
-  file:
-    path: "/opt/bin"
-    state: directory
-    owner: root
-    group: root
-    mode: 0755
-  tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-create-script-directory
 
 - name: Create log directory stored by full scan script
   file:
-    path: "/var/log/clamav"
+    path: "{{ clamav_log_dir }}"
     state: directory
-    owner: "{{ clamav.user | trim }}"
-    group: "{{ clamav.group | trim }}"
+    owner: "{{ clamav_user | trim }}"
+    group: "{{ clamav_group | trim }}"
     mode: 0755
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-create-log-directory
 
 - name: Create virus evacuation directory stored by full scan script
   file:
-    path: "/var/log/clamav/virus"
+    path: "{{ clamav_virus_evacuation_dir }}"
     state: directory
-    owner: "{{ clamav.user | trim }}"
-    group: "{{ clamav.group | trim }}"
+    owner: "{{ clamav_user | trim }}"
+    group: "{{ clamav_group | trim }}"
     mode: 0755
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-create-virus-evacuation-directory
 
 - name: Create clamd full scan script
   template:
-    src: "{{ item }}.j2"
-    dest: "/opt/bin/{{ item }}"
-  with_items:
-    - clamd-fullscan.sh
+    src: "{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
+  with_items: "{{ clamav_clamd_fullscan_path }}"
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-create-clamd-fullscan-script
 
 - name: Create clamd full scan services
   template:
-    src: "{{ item }}.j2"
-    dest: "/etc/systemd/system/{{ item }}"
+    src: "{{ item.lstrip('/') }}.j2"
+    dest: "{{ item }}"
     owner: root
     group: root
     mode: 0644
   with_items:
-    - clamd-fullscan.service
-    - clamd-fullscan.timer
+    - "{{ clamav_clamd_fullscan_service_path }}"
+    - "{{ clamav_clamd_fullscan_timer_path }}"
   tags:
-    - security
-    - clamav
-    - webserver
+    - clamav-create-clamd-fullscan-services
+
+- name: Check clamd full scan timer exists
+  stat:
+    path: "{{ clamav_clamd_fullscan_timer_path }}"
+  register: clamav_clamd_fullscan_timer_path_result
+  tags:
+    - clamav-check-clamd-fullscan-timer
+
+- name: Enable clamd full scan timer
+  systemd:
+    name: "{{ clamav_clamd_fullscan_timer_name }}"
+    state: started
+    enabled: true
+    daemon-reload: true
+  when: clamav_clamd_fullscan_timer_path_result.stat.exists
+  tags:
+    - clamav-enable-clamd-fullscan-timer

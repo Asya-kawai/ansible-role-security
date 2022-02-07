@@ -97,7 +97,7 @@ LocalSocket /run/clamd.scan/clamd.sock
 
 # Sets the group ownership on the unix socket.
 # Default: disabled (the primary group of the user running clamd)
-LocalSocketGroup {{ clamav.group }}
+LocalSocketGroup {{ clamav_group }}
 
 # Sets the permissions on the unix socket to the specified mode.
 # Default: disabled (socket is world accessible)
@@ -176,7 +176,7 @@ SendBufTimeout 200
 # Don't scan files and directories matching regex
 # This directive can be used multiple times
 # Default: scan all
-{% for item in clamav.exclude_paths %}
+{% for item in clamav_exclude_paths %}
 ExcludePath {{ item }}
 {% endfor %}
 
@@ -217,7 +217,7 @@ SelfCheck 3600
 
 # Run as another user (clamd must be started by root for this option to work)
 # Default: don't drop privileges
-User {{ clamav.user }}
+User {{ clamav_user }}
 
 # Stop daemon when libclamav reports out of memory condition.
 #ExitOnOOM yes
