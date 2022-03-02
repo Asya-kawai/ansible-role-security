@@ -49,16 +49,15 @@ ansible_ssh_private_key_file: ""
 
 `webserver_ubuntu.yml` is `webservers` host's children.
 
-This role references the `rkhunter` variable and `clamav` vairable.
+This role references the `rkhunter*` variable and `clamav*` vairable.
 
 The following example shows that
 
 * rkhunter does not execute propupd as an ansible task.
-* rkhunter sends the result of the cron job to root(defined by `rkhunter.mail_to`)
-* clamav daemon service and freshclam service's user and group are clamav(defined by `clamav.user` and `clamav.group`)
+* rkhunter sends the result of the cron job to root(defined by `rkhunter_mail_to`)
 * Ansible does not run freshclam as a task.
-* The command of clamdscan except for some directories(defined by `clamav.exclude_paths`)
-* clamdscan sends the scan result to root(defined by `clamav.mail_to`)
+* The command of clamdscan except for some directories(defined by `clamav_exclude_paths`)
+* clamdscan sends the scan result to root(defined by `clamav_mail_to`)
 
 ```
 ansible_user: ubuntu
