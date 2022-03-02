@@ -65,22 +65,22 @@ ansible_user: ubuntu
 become: yes
 ansible_become_password: 'ThisIsSecret!'
 
-rkhunter:
-  propupd: no
-  mail_to: root
+rkhunter_propupd: false
+rkhunter_mail_to: root
+rkhunter_allow_ssh_root_user: 'no'
 
-clamav:
-  user: clamav
-  group: clamav
-  exclude_paths:
-    - ^/boot/
-    - ^/dev/
-    - ^/proc/
-    - ^/sys/
-    - ^/run/
-    - ^/var/log/clamav/virus/
-  freshclam: no
-  mail_to: root
+clamav_exclude_paths:
+  - ^/boot/
+  - ^/dev/
+  - ^/proc/
+  - ^/snap/
+  - ^/sys/
+  - ~/run
+  - ^/var/log/clamav/virus
+  - ~/var/lib/
+  - ~/var/spool/
+clamav_freshclam: no
+clamav_mail_to: root
 ```
 
 **Note**
@@ -94,22 +94,22 @@ Therefore freshclam command will fail and you must set the `freshclam` variable 
 When appling to CentOS, you can define same parameters.
 
 ```
-rkhunter:
-  propupd: no
-  mail_to: root
+rkhunter_propupd: false
+rkhunter_mail_to: root
+rkhunter_allow_ssh_root_user: 'no'
 
-clamav:
-  user: clamav
-  group: clamav
-  exclude_paths:
-    - ^/boot/
-    - ^/dev/
-    - ^/proc/
-    - ^/sys/
-    - ^/var/log/clamav/virus/
-    - ^/var/spool/
-  freshclam: no
-  mail_to: root
+clamav_exclude_paths:
+  - ^/boot/
+  - ^/dev/
+  - ^/proc/
+  - ^/snap/
+  - ^/sys/
+  - ~/run
+  - ^/var/log/clamav/virus
+  - ~/var/lib/
+  - ~/var/spool/
+clamav_freshclam: no
+clamav_mail_to: root
 ```
 
 # How to DryRun and Apply

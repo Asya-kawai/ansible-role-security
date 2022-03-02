@@ -1,3 +1,4 @@
+---
 - name: Install OS packages for Debian
   package:
     name:
@@ -33,7 +34,7 @@
     group: root
     mode: 0644
   with_items:
-     - freshclam.conf
+    - freshclam.conf
   when: ansible_facts['os_family'] == 'Debian'
   tags:
     - clamav-configure-freshclam
@@ -46,7 +47,7 @@
     group: root
     mode: 0644
   with_items:
-     - freshclam.conf
+    - freshclam.conf
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
     - clamav-configure-freshclam
@@ -179,6 +180,9 @@
   template:
     src: "{{ item.lstrip('/') }}.j2"
     dest: "{{ item }}"
+    owner: root
+    group: root
+    mode: 0755
   with_items: "{{ clamav_clamd_fullscan_path }}"
   tags:
     - clamav-create-clamd-fullscan-script

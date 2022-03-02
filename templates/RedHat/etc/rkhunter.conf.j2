@@ -312,7 +312,11 @@ AUTO_X_DETECT=1
 #
 # The default value is 'no'.
 #
+{% if rkhunter_allow_ssh_root_user | lower in ('no', 'false') %}
 ALLOW_SSH_ROOT_USER=no
+{% else %}
+ALLOW_SSH_ROOT_USER={{ rkhunter_allow_ssh_root_user | lower if rkhunter_allow_ssh_root_user | lower != 'true' else 'yes' }}
+{% endif %}
 
 #
 # Set this option to '1' to allow the use of the SSH-1 protocol, but note

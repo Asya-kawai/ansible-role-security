@@ -50,7 +50,7 @@
 # Caution: it should run after ensure that all warning repoted by rkhunter are safe.
 - name: Propupd rkhunter
   command: rkhunter --propupd
-  when: rkhunter.propupd | default(false)
+  when: rkhunter_propupd
   changed_when: false
   tags:
     - rkhunter-propupd
@@ -65,30 +65,28 @@
 - name: Check rkhunter stdout
   fail:
     msg: rkhunter reported some warning...
-  when: not rkhunter_check_result.stdout == ""
+  when: rkhunter_check_result.stdout | length > 0
   tags:
     - rkhunter-check-stdout
 
 - name: Configure rkhunter daily job for Debian
   template:
-    src: "{{ ansible_facts['os_family'] }}/etc/default/{{ item }}.j2"
-    dest: "/etc/default/{{ item }}"
+    src: "{{ ansible_facts['os_family'] }}/etc/default/rkhunter.j2"
+    dest: "/etc/default/rkhunter"
     owner: root
     group: root
     mode: 0644
-  with_items: rkhunter
   when: ansible_facts['os_family'] == 'Debian'
   tags:
     - rkhunter-configure-daily-job
 
 - name: Configure rkhunter daily job for CentOS
   template:
-    src: "{{ ansible_facts['os_family'] }}/etc/sysconfig/{{ item }}.j2"
-    dest: "/etc/sysconfig/{{ item }}"
+    src: "{{ ansible_facts['os_family'] }}/etc/sysconfig/rkhunter.j2"
+    dest: "/etc/sysconfig/rkhunter"
     owner: root
     group: root
     mode: 0644
-  with_items: rkhunter
   when: ansible_facts['os_family'] == 'RedHat'
   tags:
     - rkhunter-configure-daily-job

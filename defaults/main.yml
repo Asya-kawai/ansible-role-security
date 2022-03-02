@@ -1,6 +1,7 @@
 ---
 rkhunter_propupd: false
 rkhunter_mail_to: root
+rkhunter_allow_ssh_root_user: false
 
 clamav_user: >-
     {% if ansible_facts['os_family'] == 'RedHat' %}

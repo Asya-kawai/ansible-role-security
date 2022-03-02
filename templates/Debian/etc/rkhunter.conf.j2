@@ -309,6 +309,9 @@ AUTO_X_DETECT=1
 # The default value is 'no'.
 #
 #ALLOW_SSH_ROOT_USER=no
+{% if rkhunter_allow_ssh_root_user | lower not in ('no', 'false') %}
+ALLOW_SSH_ROOT_USER={{ rkhunter_allow_ssh_root_user | lower if rkhunter_allow_ssh_root_user | lower != 'true' else 'yes' }}
+{% endif %}
 
 #
 # Set this option to '1' to allow the use of the SSH-1 protocol, but note
@@ -598,6 +601,8 @@ SCRIPTWHITELIST=/usr/bin/which
 SCRIPTWHITELIST=/usr/bin/ldd
 {% if (lwp_request_path_result is defined) and (not lwp_request_path_result == '') %}
 SCRIPTWHITELIST=/usr/bin/lwp-request
+{% else %}
+#SCRIPTWHITELIST=/usr/bin/lwp-request
 {% endif %}
 SCRIPTWHITELIST=/usr/sbin/adduser
 #SCRIPTWHITELIST=/usr/sbin/prelink
