@@ -1,5 +1,7 @@
 # Ansible Role For Security
 
+[![CI](https://github.com/Asya-kawai/ansible-role-security/actions/workflows/ci.yml/badge.svg)](https://github.com/Asya-kawai/ansible-role-security/actions/workflows?query=workflow%3ACI)
+
 Set Basic security configuration using `rkhunter` and `clamav`.
 
 # Examples
